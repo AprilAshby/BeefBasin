@@ -1,0 +1,83 @@
+#install.packages("vegan")
+library(vegan)
+library(MASS)
+
+#---NMDS Script for Plant Community Ecology--------
+#### Took the file F:/LPI/LPIRelativeCover.csv and used
+#### SUM and COUNTIF in Excel to find the colum sums and 
+#### number of sites each veg was found at then I manually
+#### removed those with COUNTIF below 5 AND SUMS below .05 (had to both be below to be removed)
+#### Also cleaned up the data (combined SALS0 and SALSO, etc...)
+#,row.names=1 ### taken out but saved if needed
+data<-read.csv("F:/LPI/LPIRelativeCoverCommonInExcel.csv",header=TRUE)
+#Remove IL2_9 from LPI data because it does not exist in Shrub data
+data<-data[data$X!='IL2_9',]
+data
+write.csv(data,file="F:/LPI/data1.csv")
+
+#calculate dissimilarities, use function "vegdist"in VEGAN package
+data.dis<-vegdist(data,method="bray")
+#data.dis
+dis.matrix<-as.matrix(data.dis)
+#dis.matrix
+#write.csv(dis.matrix,file="F:/LPI/LPIDistanceMatrix.csv")
+#rankindex compares euclidean, bray-curtis, etc... for my data
+rankindex(dis.matrix,data)
+
+#calculate isoMDS function, use isoDS function in MASS package
+#data.mds<-isoMDS(data.dis)
+#data.mds
+data.mds <- metaMDS(data)
+data.mds
+#--------stressplot and ordiplot----------
+#Stress <0.10 indicates that the ordination is good "with no real 
+#risk of drawing false inferences" (Clarke 1993, p. 26). 
+stressplot(data.mds) # linear fit is the fit between ordination values and distances
+ordiplot(data.mds,type="t")
+
+ordiplot(data.mds)
+ordiplot(data.mds, display ="sites", type ="n")
+text(data.mds, display="sites", col="black", cex=0.7)
+
+###########################  ENVIRONMENTAL DATA  ###########################################
+
+
+#read in environmental data
+data.env.input<-read.csv("F:/Soils/SoilEnvironmentalData.csv",header=TRUE)
+#Remove IL2_9 from Soils data because it does not exist in Shrub data
+data.env<-data.env.input[data.env.input$id!='IL2_9',]
+
+significant.data.env<-data.env[,c(5:8,11,14:18)]
+more.significant.data.env<-data.env[,c(6,7,11,15,18)]
+non.significant.data.env<-data.env[,c(1:4,9,10,12,13)]
+#add shrub height class densities to environmental data
+data.A.env<-read.csv("F:/ShrubDensity/HeightClass/AdensityM2.csv")
+data.B.env<-read.csv("F:/ShrubDensity/HeightClass/BdensityM2.csv")
+data.C.env<-read.csv("F:/ShrubDensity/HeightClass/CdensityM2.csv")
+data.D.env<-read.csv("F:/ShrubDensity/HeightClass/DdensityM2.csv")
+data.E.env<-read.csv("F:/ShrubDensity/HeightClass/EdensityM2.csv")
+
+#set distclass to factor
+#data.env[,5]=as.factor(data.env[,5])
+#data.env[,5]
+#is.factor(data.env[,5]) 
+
+data.mds<-metaMDS(comm=data,distance="euc",trace=FALSE)
+data.mds
+stressplot(data.mds) 
+
+#function "envfit" fits environmental vectors or factors onto an ordination.
+#requires ordination plot first before plot(fit)
+fit<-envfit(data.mds,significant.data.env,perm=1000)
+fit
+
+#plotMDS
+plot(data.mds,type="t",main="NMDS using Euclidean Distance")
+
+ordiplot(data.mds)
+ordiplot(data.mds, display ="species", type ="n")
+text(data.mds, display="sites", col="blue", cex=0.7)
+text(data.mds, display="species", col="red", cex=0.7)
+
+#plot environmental loadings
+plot(fit,col="black", cex=0.7)
