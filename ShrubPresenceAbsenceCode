@@ -1,0 +1,59 @@
+#April's Shrub Data
+install.packages('plyr')
+library(plyr)
+
+#read in shrub density data and omit date, site, etc...
+shrub <- read.csv('F:/ShrubDensity/PresenceAbsence/ShrubSummary.csv')
+shrub <- shrub[1:7456,c(2,3,5,6)]
+shrub
+
+#Summed shrub totals across transects 2,3, and 4
+#Put into Plot by Species matrix
+plotXspp<-xtabs(Total~Plot+Species, shrub)
+plotXspp
+write.csv(plotXspp,file="F:/ShrubDensity/PresenceAbsence/plotXspp.csv")
+
+########## Shrub Density in m2 and ha ##################
+
+#know area sampled: 30m transects X 2m belt X 3 transects per plot (2,3,&4) = 180m2
+# density in m2
+densityM2 <- plotXspp/180
+densityM2
+write.csv(densityM2,file="F:/ShrubDensity/PresenceAbsence/densityM2.csv")
+
+#density in ha
+# ha = m2/10,000
+densityHa <- densityM2/10000
+densityHa
+write.csv(densityHa,file="F:/ShrubDensity/PresenceAbsence/densityHa.csv")
+
+########### Presence/Absence ######################
+
+#Turn shurb totals into presence/absence (1/0)
+pa <- (plotXspp>0)     # logical, or 
+pa <- (plotXspp>0)*1L  # integer 01 
+pa
+write.csv(pa,file="F:/ShrubDensity/PresenceAbsence/ShrubPresenceAbsence.csv")
+
+#Select only ARTR and ARTR/D presence/absence (1/0)
+Sage <- pa[,3:4]
+write.csv(Sage,file="F:/ShrubDensity/PresenceAbsence/SagePresenceAbsence.csv")
+
+#Select only ARTR presence/absence (1/0)
+SageLive <-pa[,3]
+write.csv(SageLive,file="F:/ShrubDensity/PresenceAbsence/SageLivePresenceAbsence.csv")
+
+#Select only ARTR/D presence/absence (1/0)
+SageDead <-pa[,4]
+write.csv(SageDead,file="F:/ShrubDensity/PresenceAbsence/SageDeadPresenceAbsence.csv")
+
+
+###### Seperate into 3 classes: #################################################
+########### Live presence, only dead presence, no live or dead ##################
+
+Class <- (Sage[,1] > 0)*1L ## Live Sage present
+Class <- (Sage[,2] > 0)*2L ## No Live Sage present, only dead
+ nothing <- (Sage [,1])+ (Sage [,2])
+Class <- c(((Sage[,1] > 0)*1L),((Sage[,2] > 0)*2L),((nothing < 1)*3L))  ## No Sage live or dead present
+write.csv(Class,file="F:/ShrubDensity/PresenceAbsence/SagebrushLiveDeadAbsentClasses.csv")
+Class
