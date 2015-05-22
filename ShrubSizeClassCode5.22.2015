@@ -1,0 +1,81 @@
+#April's Shrub Size Class Data
+install.packages('plyr')
+library(plyr)
+
+#read in shrub density detail data and omit date, site, etc...
+class <- read.csv('F:/ShrubDensity/HeightClass/PlantDenDetail.csv')
+
+#Summed shrub totals across transects 2,3, and 4
+#Put into Plot by Species matrix for:
+
+#Class A
+AplotXspp<-xtabs(ClassAtotal~Plot+SpeciesCode, class)
+write.csv(AplotXspp,file="F:/ShrubDensity/HeightClass/AplotXspp.csv")
+
+#Class B
+BplotXspp<-xtabs(ClassBtotal~Plot+SpeciesCode, class)
+write.csv(BplotXspp,file="F:/ShrubDensity/HeightClass/BplotXspp.csv")
+
+#Class C
+CplotXspp<-xtabs(ClassCtotal~Plot+SpeciesCode, class)
+write.csv(CplotXspp,file="F:/ShrubDensity/HeightClass/CplotXspp.csv")
+
+#Class D
+DplotXspp<-xtabs(ClassDtotal~Plot+SpeciesCode, class)
+write.csv(DplotXspp,file="F:/ShrubDensity/HeightClass/DplotXspp.csv")
+
+#Class E
+EplotXspp<-xtabs(ClassEtotal~Plot+SpeciesCode, class)
+write.csv(EplotXspp,file="F:/ShrubDensity/HeightClass/EplotXspp.csv")
+
+
+
+########## Shrub Density in m2 and ha ##################
+
+#know area sampled: 30m transects X 2m belt X 3 transects per plot (2,3,& 4) = 180m2
+# density in m2
+
+#Class A
+AdensityM2 <- AplotXspp/180
+write.csv(AdensityM2,file="F:/ShrubDensity/HeightClass/AdensityM2.csv")
+
+#Class B
+BdensityM2 <- BplotXspp/180
+write.csv(BdensityM2,file="F:/ShrubDensity/HeightClass/BdensityM2.csv")
+
+#Class C
+CdensityM2 <- CplotXspp/180
+write.csv(CdensityM2,file="F:/ShrubDensity/HeightClass/CdensityM2.csv")
+
+#Class D
+DdensityM2 <- DplotXspp/180
+write.csv(DdensityM2,file="F:/ShrubDensity/HeightClass/DdensityM2.csv")
+
+#Class E
+EdensityM2 <- EplotXspp/180
+write.csv(EdensityM2,file="F:/ShrubDensity/HeightClass/EdensityM2.csv")
+
+
+#density in ha
+# ha = m2/10,000
+
+#Class A
+AdensityHa <- AdensityM2/10000
+write.csv(AdensityHa,file="F:/ShrubDensity/HeightClass/AdensityHa.csv")
+
+#Class B
+BdensityHa <- BdensityM2/10000
+write.csv(BdensityHa,file="F:/ShrubDensity/HeightClass/BdensityHa.csv")
+
+#Class C
+CdensityHa <- CdensityM2/10000
+write.csv(CdensityHa,file="F:/ShrubDensity/HeightClass/CdensityHa.csv")
+
+#Class D
+DdensityHa <- DdensityM2/10000
+write.csv(DdensityHa,file="F:/ShrubDensity/HeightClass/DdensityHa.csv")
+
+#Class E
+EdensityHa <- EdensityM2/10000
+write.csv(EdensityHa,file="F:/ShrubDensity/HeightClass/EdensityHa.csv")
+
