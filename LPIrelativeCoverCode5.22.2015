@@ -1,0 +1,61 @@
+library(plyr)
+begay<-read.csv('F:/LPI/LPIindicatorsBEGAY.csv')
+ignacio<-read.csv('F:/LPI/LPIindicatorsIGNACIOLEANTO.csv')
+mido<-read.csv('F:/LPI/LPIindicatorsMIDO.csv')
+
+lpiAll<-rbind(begay, ignacio, mido)
+lpiAll
+write.csv(lpiAll,file="F:/LPI/LPIofAll3Soils.csv")
+
+lpi<-xtabs(Any.Hit.Avg~Plot+Indicator, lpiAll)
+lpi
+
+relcover<-lpi/rowSums(lpi)
+relcover
+write.csv(relcover,file="F:/LPI/LPIRelativeCover.csv")
+
+
+# Went though and changed lpiAll species names to growth type
+# (Grass, Shrub, Forb, Tree)
+# Gives us % of each growth form in each plot
+type <- read.csv ("F:/LPI/LPIpctType.csv")
+
+lpitype<-xtabs(Any.Hit.Avg~Plot+Indicator, type)
+lpitype
+write.csv(lpitype, file="F:/LPI/lpitype.csv")
+
+relcovertype<-lpitype/rowSums(lpitype)
+relcovertype
+write.csv(relcovertype,file="F:/LPI/LPIRelativeCoverType.csv")
+
+#### Not sure why this part is'nt working #####
+#### Took the file below (which is the same as above without 'Common')
+#### and used SUM and COUNTIF in Excel to find the colum sums and 
+#### number of sites each veg was found at
+#### then I manually removed those with COUNTIF below 5 AND SUMS below .05 (had to both be below to be removed)
+
+Sums<-colSums(relcover)
+Sums
+RareSums<-(Sums<.05)
+RareSums<-RareSums*1
+RareSums
+
+Totals<-colSums(relcover != 0)
+Totals
+RareTotals<-(Totals<5)
+RareTotals<-RareTotals*1
+RareTotals
+
+RareTotSum<-rbind(RareTotals,RareSums)
+RareTotSum
+BinaryTotal<-colSums(RareTotSum)
+BinaryTotal
+
+###Determines which species are common
+#threshold = 0.001
+
+#CommonRelCover = relcover[ ,which(colSums(relcover > 0) > threshold * 99 )]
+#CommonRelCover
+#write.csv(CommonRelCover,file="F:/LPICommonRelativeCover.csv")
+###I added the header name 'Plot to col 1'
+###I also added 2 more col where I split soil and veg and named them accordingly
